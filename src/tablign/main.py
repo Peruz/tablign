@@ -18,6 +18,25 @@ def _guess_delimiter(lines):
     return None
 
 
+def _guess_column_type(col):
+    numeric = 0
+    total = 0
+    test_cells = min(len(col), 100)
+    for cell in col[0: test_cells]:
+        numeric += sum([c.isdigit() for c in cell])
+        total += len(cell)
+    try:
+        ratio = numeric / total
+    except ZeroDivisionError:  # if tested cells are all empty
+        col_type = 'undefined'
+    else:
+        if ratio > 0.5:
+            col_type = 'numeric'
+        else:
+            col_type = 'alpha'
+    return(col_type)
+
+
 def _align(data, align_char):
     before_sizes = []
     after_sizes = []
@@ -46,6 +65,7 @@ def tablign(string, align_char=".", delimiter=None):
         delimiter = _guess_delimiter(lines)
 
     # split and strip
+    # list of list, i.e, lines of cells
     data = [[item.strip() for item in line.split(delimiter)] for line in lines]
 
     max_num_cols = max(len(row) for row in data)
@@ -62,8 +82,12 @@ def tablign(string, align_char=".", delimiter=None):
             cols[j] = _align(col, align_char)
         else:
             # append spaces to make all entries equally long
+            col_type = _guess_column_type(col)
             max_length = _max_col_length(col)
-            cols[j] = [item.ljust(max_length) for item in col]
+            if col_type == 'numeric':
+                cols[j] = [item.rjust(max_length) for item in col]
+            else:
+                cols[j] = [item.ljust(max_length) for item in col]
 
     # transpose back
     data = list(map(list, zip(*cols)))

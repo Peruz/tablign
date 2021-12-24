@@ -18,6 +18,11 @@ Install with
 pip install tablign
 ```
 
+Install from local directory with
+
+```sh
+python -m pip install --editable .
+```
 
 ```sh
 tablign in.txt out.txt

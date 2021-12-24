@@ -47,5 +47,14 @@ def test_first_column_missing():
     assert tablign.tablign(data) == ref
 
 
+def test_col_types():
+    data = """1,A,B,121.32,89,4.5E+11,ABCD\n2,C,D,24.1,1234,10.0E+2,AB"""
+    ref = """1 , A , B , 121.32 ,   89 ,  4.5E+11 , ABCD\n2 , C , D ,  24.1  , 1234 , 10.0E+2  , AB  """
+    print(data)
+    print(ref)
+    print(tablign.tablign(data))
+    assert tablign.tablign(data) == ref
+
+
 if __name__ == "__main__":
     test_column_seps(",")
