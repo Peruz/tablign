@@ -19,18 +19,21 @@ def _guess_delimiter(lines):
 
 
 def _guess_column_type(col):
+    ignore_header = min(1, len(col) - 1)
+    # strictly_numerical = [str(n) for n in range(10)]
+    # extra_numerical = ['^', '+', '-', 'E', 'e', '%', '$', '.', ',', ' ']
+    # all_numerical = strictly_numerical + extra_numerical
     numeric = 0
-    total = 0
+    alpha = 0
     test_cells = min(len(col), 100)
-    for cell in col[0: test_cells]:
-        numeric += sum([c.isdigit() for c in cell])
-        total += len(cell)
-    try:
-        ratio = numeric / total
-    except ZeroDivisionError:  # if tested cells are all empty
-        col_type = 'undefined'
-    else:
-        if ratio > 0.5:
+    for i, cell in enumerate(col[ignore_header: test_cells]):
+        try:
+            float(cell.strip('%$€¥£').replace(',', ''))
+        except ValueError:
+            alpha += 1
+        else:
+            numeric += 1
+        if numeric >= alpha:
             col_type = 'numeric'
         else:
             col_type = 'alpha'
