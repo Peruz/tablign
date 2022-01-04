@@ -20,15 +20,12 @@ def _guess_delimiter(lines):
 
 def _guess_column_type(col):
     ignore_header = min(1, len(col) - 1)
-    # strictly_numerical = [str(n) for n in range(10)]
-    # extra_numerical = ['^', '+', '-', 'E', 'e', '%', '$', '.', ',', ' ']
-    # all_numerical = strictly_numerical + extra_numerical
     numeric = 0
     alpha = 0
     test_cells = min(len(col), 100)
     for i, cell in enumerate(col[ignore_header: test_cells]):
         try:
-            float(cell.strip('%$€¥£').replace(',', ''))
+            complex(cell.replace(',', '').replace(' ', '').strip('%$€¥£'))
         except ValueError:
             alpha += 1
         else:
